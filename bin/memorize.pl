@@ -3,4 +3,4 @@
 use strictures;
 use Cmd::Memorize;
 
-Cmd::Memorize->new->start;
+Cmd::Memorize->new_with_options->start;

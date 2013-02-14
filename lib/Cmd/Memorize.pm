@@ -1,11 +1,14 @@
 package Cmd::Memorize;
 use Moose;
 use namespace::autoclean;
+use Cmd::Memorize::View::Add;
 
 with 'MooseX::Getopt';
 
 has play  => ( is => 'rw', isa => 'Bool', default => 1 );
 has add   => ( is => 'rw', isa => 'Bool', );
+
+has add_view => ( is => 'rw', default => sub { Cmd::Memorize::View::Add->new }, lazy => 1 );
 
 sub start {
     my $self = shift;
@@ -15,7 +18,7 @@ sub start {
 }
 
 sub _handle_add {
-    # Todo implement
+    $_[0]->add_view->display;
 }
 
 sub _handle_play {
