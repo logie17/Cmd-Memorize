@@ -20,10 +20,7 @@ around display => sub {
     );
     my $menu = $cui->add( 'menu','Menubar', -menu => \@menu, -fg  => "blue",);
     my $window = $cui->add('window', 'Window',-intellidraw=>1, -y => 1, -bfg => 'red');
-
-    $self->next(@_);
-
-    $window->focus();
+    $self->$next($window, @_);
     $cui->mainloop;
 };
 
