@@ -11,23 +11,29 @@ has cui => (
     }
 );
 
+has window => (
+    is => 'rw',
+);
+
 around display => sub {
     my ($next, $self) = (shift, shift);
 
     my $cui = $self->cui;
-    my @menu = (
-      { -label => 'File', -submenu => [ { -label => 'Exit      ^Q', -value => sub { $self->exit_dialog }  } ] }
+    my @menu = ({ -label => 'File', -submenu => [
+                { -label => 'Create Set', -value => sub { $self->create_set } },
+                { -label => 'Exit      ^Q', -value => sub { $self->exit_dialog } }
+            ] 
+        }
     );
     my $menu = $cui->add( 'menu','Menubar', -menu => \@menu, -fg  => "blue",);
-    my $window = $cui->add('window', 'Window',-intellidraw=>1, -y => 1, -bfg => 'red');
-    $self->$next($window, @_);
+    $self->window($cui->add('window', 'Window',-intellidraw=>1, -y => 1, -bfg => 'red'));
+    $self->$next(@_);
     $cui->mainloop;
 };
 
 sub exit_dialog {
     my $self = shift;
-    my $return = $self->cui->dialog( -message   => "Do you really want to quit?", -title     => "Are you sure???", -buttons   => ['yes', 'no'], );
-    exit(0) if $return;
+    exit(0) if $self->cui->dialog( -message   => "Do you really want to quit?", -title     => "Are you sure???", -buttons   => ['yes', 'no'], );
 }
 
 
