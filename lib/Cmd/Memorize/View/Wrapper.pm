@@ -1,17 +1,33 @@
 package Cmd::Memorize::View::Wrapper;
 
 use Moose::Role;
+use Class::Load qw(load_class try_load_class);
 requires 'display';
 
 sub _build_screens {
     my $self = shift;
     my $screens = {};
-    while (my ($id, $title) = each %{$self->screens} ) { 
+    for my $screen ( @{$self->screens} ) {
         $screens->{$id} = $self->cui->add($id, 'Window', -title => $title, %{$self->window_args});
-        $self->${\("_build_${id}")}($screens->{$id});
+        $controller_class = "Cmd::Memorize::Presenter::$screen";
+        $view_class = "Cmd::Memorize::View::$screen";
+        my $controller;
+        if ( try_load_class($controller_class) ) {
+            $controller = $controller_class->new;
+        }
+        
+        if ( load_class($view_class) ) {
+            $view = $view_class->new;
+            $self->${\("_build_${id}")}($screens->{$id}, $controller);
+        }
     }
     return $screens;
 }
+
+has controller => (
+    is => 'rw',
+    required => 1,
+);
 
 has cui => (
     is => 'rw',
@@ -56,7 +72,6 @@ around display => sub {
             ] 
         }
     );
-
 
     my $menu = $cui->add( 'menu','Menubar', -menu => \@menu, -fg  => "blue",);
     $self->window($cui->add('window', 'Window',-intellidraw=>1, -y => 1, -bfg => 'red'));

@@ -8,7 +8,8 @@ with 'MooseX::Getopt';
 has play  => ( is => 'rw', isa => 'Bool', default => 1 );
 has add   => ( is => 'rw', isa => 'Bool', );
 
-has add_view => ( is => 'rw', default => sub { Cmd::Memorize::View::Add->new }, lazy => 1 );
+has add_view => ( is => 'rw', default => sub { Cmd::Memorize::View::Add->new( controller => (shift)->add_presentor ) }, lazy => 1 );
+has add_presentor => ( is => 'rw', default => sub { Cmd::Memorize::Presentor::Add->new}, lazy => 1);
 
 sub start {
     my $self = shift;
@@ -18,7 +19,9 @@ sub start {
 }
 
 sub _handle_add {
-    $_[0]->add_view->display;
+    my $self = shift;
+    my $view = $self->add_view;
+    $view->display;
 }
 
 sub _handle_play {
